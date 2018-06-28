@@ -1,6 +1,7 @@
 package server.model;
 
-import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
+
 
 public class WelcomeObjectModel extends Model {
 	
@@ -8,10 +9,10 @@ public class WelcomeObjectModel extends Model {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getJSONObject() {
-		JSONObject o = new JSONObject();
-		o.put("message",message);
-		return o;
+	public JSONArray getJSONArray() {
+		JSONArray a = new JSONArray();
+		a.add(message);
+		return a;
 	}
 
 }

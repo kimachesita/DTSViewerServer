@@ -1,7 +1,7 @@
 package server.model;
 
-import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
 
 public abstract class Model {
-	public abstract JSONObject getJSONObject();
+	public abstract JSONArray getJSONArray();
 }

@@ -17,70 +17,84 @@ public class HttpParser {
 		}catch (IOException e) {
 			System.out.println("Error Initializing Input Stream");
 		}
-		
 	}
 
-	public HttpPacket parse() {
+	public HttpPacket parseRequest() {
 
-		HttpPacket request = null;
-
-		try {
-			
-			request = new HttpPacket();
-
-			//parse request header line
-			StringBuilder b = new StringBuilder();
-			b.setLength(0);
-			while(true) {
-				int c = in.read();
-				if(c == '\r') {
-					in.read();
+		StringBuilder b = new StringBuilder();
+		while(true) {
+			String line;
+			try {
+				line = in.readLine();
+				if(line == null) break;
+				if(!line.matches("")) {
+					b.append(line + "\r\n");
+				}else {
 					break;
 				}
-				b.append((char) c);
-			}
-			request.setReqHeaderLine(b.toString());
-
-			//parse request header
-			while(true) {
-				b.setLength(0);
-				while(true) {
-					int c = in.read();
-					if(c == '\r') {
-						in.read();
-						break;
-					}
-					b.append((char) c);
-				}
-				if(b.length() == 0) break;
-				request.appendReqHeader(b.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+				break;
 			}
 
-			//parse body
-			//System.out.println("parsing body");
-			//request.printHeaderLine();
-			//request.printHeader();
-			//System.out.println(request.getContentLength());
-			StringBuilder body = new StringBuilder();
-			if(request.getContentLength() != 0) {
-				for(int i=0; i < request.getContentLength(); i++) {
-					body.append((char) in.read());
-				}
-			}
-			request.setReqBody(body.toString());
-
-
-		}catch(OutOfMemoryError e) {
-			//e.printStackTrace();
-			//solve this
-		}catch(IOException e){
-			System.out.println("Error Communicating to Socket.");
-		}finally {
-			try {
-				in.close();
-			} catch (IOException e) {}
 		}
 
-		return request;
+		HttpPacket p = new HttpPacket(b.toString());
+
+		if( p.getContentLength() != 0 ) {
+			StringBuilder body = new StringBuilder();
+			for(int i = 0; i < p.getContentLength();i++) {
+				try {
+					int c = in.read();
+					body.append((char) c);
+				} catch (IOException e) {
+					System.out.println("Error parsing body...");
+				}
+
+			}
+			p.setRequestBody(body.toString());
+		}
+
+		return p;
 	}
+
+	public HttpPacket parseResponse() {
+
+		StringBuilder b = new StringBuilder();
+		while(true) {
+			String line;
+			try {
+				line = in.readLine();
+				if(line == null) break;
+				if(!line.matches("")) {
+					b.append(line + "\r\n");
+				}else {
+					break;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				break;
+			}
+
+		}
+
+		HttpPacket p = new HttpPacket(b.toString());
+
+		if( p.getContentLength() != 0 ) {
+			StringBuilder body = new StringBuilder();
+			for(int i = 0; i < p.getContentLength();i++) {
+				try {
+					int c = in.read();
+					body.append((char) c);
+				} catch (IOException e) {
+					System.out.println("Error parsing body...");
+				}
+
+			}
+			p.setResponseBody(body.toString());
+		}
+
+		return p;
+	}
+
 }

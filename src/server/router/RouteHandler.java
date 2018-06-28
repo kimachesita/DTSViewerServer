@@ -2,25 +2,20 @@ package server.router;
 
 import java.util.HashMap;
 
+import server.http.HttpPacketStatus;
 import server.model.Model;
 
 public abstract class RouteHandler {
 	
-	private Integer statusCode;
-	private String statusDesc;
+	private HttpPacketStatus status;
 	
-	public RouteHandler(Integer code,String desc) {
-		statusCode = code;
-		statusDesc = desc;
+	public RouteHandler(HttpPacketStatus s) {
+		status = s;
 	}
 	
 	public abstract Model process(HashMap<String,String> param);
 	
-	public Integer getStatusCode() {
-		return statusCode;
-	}
-	
-	public String getStatusDescription() {
-		return statusDesc;
+	public HttpPacketStatus getStatus() {
+		return status;
 	}
 }

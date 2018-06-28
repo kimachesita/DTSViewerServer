@@ -1,22 +1,20 @@
 package server.http;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
-//import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.Socket;
 
 
 public class HttpWriter {
-	
-	//private PrintWriter writer;
-	private PrintStream writer;
-	
+
+	private Writer out;
+
 	public HttpWriter(Socket s) {
-		//writer = new PrintWriter(new OutputStreamWriter(System.out));
+
 		try {
-			writer = new PrintStream(s.getOutputStream());
+			out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream(),"US-ASCII"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -24,10 +22,12 @@ public class HttpWriter {
 	}
 
 	public void write(HttpPacket p) {
-			writer.print(p.getResStatusLine() + "\r\n");
-			writer.print(p.getResHeader());
-			writer.print("\r\n");
-			writer.print(p.getResBody());
+		try {
+			out.write(p.buildPacketMsg());
+			out.flush();
+		} catch (IOException e) {
+			System.out.println("Error Writing to Socket");
+		}
 	}
 
 }
