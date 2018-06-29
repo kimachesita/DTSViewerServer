@@ -19,7 +19,7 @@ public class DBConnection {
 
 	}
 	
-	public void connect(){
+	public void connect() throws SQLException{
 		try {		
 			//read db config file
 			readFile();
@@ -32,7 +32,7 @@ public class DBConnection {
 					dbDetail.get("ext"), 
 					dbDetail.get("username"), 
 					dbDetail.get("password"));
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -45,7 +45,7 @@ public class DBConnection {
 
 	private void readFile() {
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader("src/config/config-db.txt"));
+			BufferedReader reader = new BufferedReader(new FileReader("src/server/db/config-db.txt"));
 			String line;
 			while ((line = reader.readLine()) != null){
 				String[] parts = line.split(":");

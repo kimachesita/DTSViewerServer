@@ -2,9 +2,9 @@ package server.router;
 
 import java.util.HashMap;
 
+import server.data.DataModel;
+import server.data.WelcomeDataModel;
 import server.http.HttpPacketStatus;
-import server.model.Model;
-import server.model.WelcomeObjectModel;
 
 public class WelcomeRouteHandler extends RouteHandler {
 
@@ -13,8 +13,8 @@ public class WelcomeRouteHandler extends RouteHandler {
 	}
 	
 	@Override
-	public Model process(HashMap<String,String> param) {
-		return new WelcomeObjectModel();
+	public DataModel process(HashMap<String,String> param) {
+		return new WelcomeDataModel();
 	}
 
 }

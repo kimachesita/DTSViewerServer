@@ -2,8 +2,8 @@ package server.router;
 
 import java.util.HashMap;
 
+import server.data.DataModel;
 import server.http.HttpPacketStatus;
-import server.model.Model;
 
 public class NotImplementedRouteHandler extends RouteHandler {
 
@@ -12,8 +12,8 @@ public class NotImplementedRouteHandler extends RouteHandler {
 	}
 
 	@Override
-	public Model process(HashMap<String, String> param) {
-		return new server.model.NotImplementedObjectModel();
+	public DataModel process(HashMap<String, String> param) {
+		return new server.data.NotImplementedDataModel();
 	}
 
 }

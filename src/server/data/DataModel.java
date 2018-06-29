@@ -1,7 +1,8 @@
-package server.model;
+package server.data;
 
 import org.json.simple.JSONArray;
 
-public abstract class Model {
+
+public abstract class DataModel {
 	public abstract JSONArray getJSONArray();
 }

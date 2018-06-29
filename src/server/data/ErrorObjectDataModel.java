@@ -1,11 +1,11 @@
-package server.model;
+package server.data;
 
 import org.json.simple.JSONArray;
 
 
-public class WelcomeObjectModel extends Model {
-	
-	private String message = "Hello, World!";
+public class ErrorObjectDataModel extends DataModel {
+
+	private String message = "Internal Server Error";
 
 	@SuppressWarnings("unchecked")
 	@Override

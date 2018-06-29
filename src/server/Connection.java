@@ -24,8 +24,9 @@ public class Connection implements Runnable{
 	@Override
 	public void run() {
 		
-		System.out.println("Running thread for connection" + socket.getRemoteSocketAddress());
 		HttpPacket p = httpParser.parseRequest();
+		System.out.println("Processing " + p.getReqMethod() + p.getReqRoute() + " from " + socket.getRemoteSocketAddress());
+		//Auth.authenticate(p)
 		httpWriter.write(router.route(p));
 		
 		try {

@@ -19,6 +19,7 @@ public class HttpParser {
 		}
 	}
 
+	//method to parse request @ server side
 	public HttpPacket parseRequest() {
 
 		StringBuilder b = new StringBuilder();
@@ -48,7 +49,7 @@ public class HttpParser {
 					int c = in.read();
 					body.append((char) c);
 				} catch (IOException e) {
-					System.out.println("Error parsing body...");
+					System.out.println("Error parsing body");
 				}
 
 			}
@@ -58,6 +59,7 @@ public class HttpParser {
 		return p;
 	}
 
+	//method to parse respose @ client side
 	public HttpPacket parseResponse() {
 
 		StringBuilder b = new StringBuilder();
@@ -87,7 +89,7 @@ public class HttpParser {
 					int c = in.read();
 					body.append((char) c);
 				} catch (IOException e) {
-					System.out.println("Error parsing body...");
+					System.out.println("Error parsing body");
 				}
 
 			}

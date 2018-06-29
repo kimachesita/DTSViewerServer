@@ -2,8 +2,8 @@ package server.router;
 
 import java.util.HashMap;
 
+import server.data.DataModel;
 import server.http.HttpPacketStatus;
-import server.model.Model;
 
 public abstract class RouteHandler {
 	
@@ -13,9 +13,13 @@ public abstract class RouteHandler {
 		status = s;
 	}
 	
-	public abstract Model process(HashMap<String,String> param);
+	public void setStatus(HttpPacketStatus s) {
+		status = s;
+	}
 	
 	public HttpPacketStatus getStatus() {
 		return status;
 	}
+	
+	public abstract DataModel process(HashMap<String,String> param);
 }

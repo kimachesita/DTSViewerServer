@@ -29,7 +29,7 @@ public class HttpPacket {
 				//do nothing,create null packet
 				return;
 			}
-			headerLine[0] = rhl[0];	//method
+			headerLine[0] = rhl[0];	  //method
 			headerLine[1] = rhl[1];  //route
 			headerLine[2] = rhl[2];  //HttpVersion
 			
@@ -64,20 +64,43 @@ public class HttpPacket {
 			header.put("Content-type", "text/JSON");
 			header.put("content-length", p.length() + "");
 			body = p;
+			setRequestBody(p);
 		}
 		
 	}
 	
-	//used by parser to parsed and record request parameters
-	public void setRequestBody(String b) {
+	//Authentication token utilities
+	public void addAuthToken(String t) {
+		if(header.get("Authentication") == null) {
+			header.put("Authentication", "Bearer " + t);
+		}else {
+			System.out.println("Authentication token present already");
+		}
+		
+	}
+	
+	public void removeToken() {
+		header.remove("Authentication");
+	}
+	
+	public String getToken() {
+		return header.get("Authentication");
+	}
+	
+	//used by parser and packet creator to parse and record request parameters
+	protected void setRequestBody(String b) {
 		body = b;
 		String[] param = b.split("&");
 		for(int i=0;i<param.length;i++) {
-			this.param.put(param[i].split("=")[0], param[i].split("=")[1]);
+			String[] p = param[i].split("=");
+			if(p.length == 2) {
+				this.param.put(p[0],p[1]);
+			}
+			
 		}
 	}
 	
-	public void setResponseBody(String b) {
+	protected void setResponseBody(String b) {
 		body = b;
 	}
 	
@@ -108,26 +131,26 @@ public class HttpPacket {
 		}
 	}
 	
-	
 	public String getBody() {
 		return body;
 	}
-	//methods for http response creation
 	
-	public void setResponse(HttpPacketStatus s,String jsonStr) {
+	
+	//methods for http response creation
+	public void setResponse(HttpPacketStatus s,String jsonStrBody) {
 	
 		clearPacket();
-		
 		
 		headerLine[0] = "HTTP/1.1";
 		headerLine[1] = s.getKey();
 		headerLine[2] = s.getValue();
 		header.put("Content-type", "text/JSON");
-		header.put("content-length", jsonStr.length() + "");
+		header.put("content-length", jsonStrBody.length() + "");
 		header.put("Connection", "close");
-		body = jsonStr;
+		body = jsonStrBody;
 	}
 	
+	//method to generate stirng representation of the packet
 	public String buildPacketMsg() {
 		StringBuilder res = new StringBuilder();
 		
