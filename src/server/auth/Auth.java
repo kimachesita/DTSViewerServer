@@ -74,6 +74,7 @@ public class Auth {
 	public synchronized HttpPacket authenticate(HttpPacket p) {
 		HttpPacket loc = p;
 		String token = p.getToken();
+		Date now = new Date();
 		
 		System.out.println("Incoming Token: " + token);
 		Auth.instance().printTokenList();
@@ -82,6 +83,9 @@ public class Auth {
 			if(token == null || !isValid(token)) {
 				loc.setReqMethod("");
 				loc.setReqRoute("AuthFailed");
+			}else {
+				//update token timestamp
+				tokenList.replace(token, tokenList.get(token), now.getTime());
 			}
 		}
 
