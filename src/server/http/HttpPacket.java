@@ -125,6 +125,7 @@ public class HttpPacket {
 	public Integer getContentLength() {
 		try {
 			String val = header.get("content-length");
+			if(val == null) val = header.get("Content-Length");
 			return Integer.valueOf(val);
 		}catch(Exception e) {
 			return 0;

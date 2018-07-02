@@ -12,7 +12,7 @@ public class Connection implements Runnable{
 	private Socket socket;
 	private HttpParser httpParser;
 	private HttpWriter httpWriter;
-	public Router router;
+	private Router router;
 
 	public Connection(Socket s) {
 		socket = s;

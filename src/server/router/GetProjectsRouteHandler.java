@@ -32,12 +32,12 @@ public class GetProjectsRouteHandler extends RouteHandler {
 
 	}
 
-	@SuppressWarnings({ "unchecked", "null" })
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public DataModel process(HashMap<String, String> param) {
 		
 		String uid = param.get("user_id");
-		JSONArray j = null;
+		JSONArray j = new JSONArray();
 		if(uid == null) {
 			uid = "";
 		}
