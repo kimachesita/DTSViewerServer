@@ -7,34 +7,36 @@ import org.json.simple.JSONArray;
 
 import server.data.DataModel;
 import server.data.GenericDataModel;
-import server.db.model.Project;
+import server.db.model.User;
 import server.http.HttpPacketStatus;
 
-public class GetProjectsRouteHandler extends RouteHandler {
+public class GetIndirectActivityRouteHandler extends RouteHandler {
 
-	public GetProjectsRouteHandler() {
+	public GetIndirectActivityRouteHandler() {
 		super(HttpPacketStatus.OK);
-
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings("unchecked")
 	@Override
 	public DataModel process(HashMap<String, String> param) {
+
+		String userId = param.get("userId");
 		
-		String uid = param.get("userId");
 		JSONArray j = new JSONArray();
-		if(uid == null) {
-			uid = "";
+
+		if(userId == null ) {
+			userId = "";
 		}
+		
+
 		try {
-			Project proj = new Project();
-			j = proj.getProjectList(uid);
+			User user = new User();
+			j = user.getUserIndirectActivity(userId);
 		} catch (SQLException e) {
 			super.setStatus(HttpPacketStatus.SERVERERROR);
 			j.add("Cannot connect to DB");
 		}
 		return new GenericDataModel(j);
-		
 	}
 
 }

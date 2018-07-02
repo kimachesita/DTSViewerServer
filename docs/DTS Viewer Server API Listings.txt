@@ -1,0 +1,11 @@
+DTS Server API Listings
+Note: all post parameters must be x-www-form-urlencoded (e.x "projectId=2&dateFrom=2015-04-01&dateTo=2015-04-01")
+
+Method                          Route                               Parameter(Example)                                   
+POST                            /api/projects                       userId("56")
+POST                            /api/workorder                      projectId("2"), dateFrom("2015-04-01"), dateTo("2015-04-01")
+POST                            /api/directactivitysummary          projectId("2"), dateFrom("2015-04-01"), dateTo("2015-04-01")
+POST                            /api/directactivityhours            projectId("2"), dateFrom("2015-04-01"), dateTo("2015-04-01")
+POST                            /api/directactivitybyuser           projectId("1"),userId("12"),dateFrom("2015-04-01"),dateTo("2020-04-01")
+POST                            /api/indirectactivity               userId("12")
+

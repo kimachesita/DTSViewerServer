@@ -15,7 +15,7 @@ public class Token {
 	public Token(String uid) {
 		header.put("typ", "JWT");
 		header.put("alg", "HS256");
-		payload.put("uid", uid);
+		payload.put("username", uid);
 		
 		String headerEncoded = Base64.getEncoder().encodeToString(header.toJSONString().getBytes());
 		String payloadEncoded = Base64.getEncoder().encodeToString(payload.toJSONString().getBytes());

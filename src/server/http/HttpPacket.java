@@ -84,7 +84,9 @@ public class HttpPacket {
 	}
 	
 	public String getToken() {
-		return header.get("Authentication");
+		String auth = header.get("Authentication");
+		if(auth != null) return auth.split(" ")[1];
+		else return null;
 	}
 	
 	//used by parser and packet creator to parse and record request parameters
@@ -108,8 +110,16 @@ public class HttpPacket {
 		return headerLine[0];
 	}
 	
+	public void setReqMethod(String t) {
+		headerLine[0] = t;
+	}
+	
 	public String getReqRoute() {
 		return headerLine[1];
+	}
+	
+	public void setReqRoute(String t) {
+		headerLine[1] = t;
 	}
 	
 	public String getReqHTTPVersion() {

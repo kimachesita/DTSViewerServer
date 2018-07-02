@@ -9,11 +9,9 @@ import java.util.Date;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-
 public class Project extends Model {
 	public Project() throws SQLException {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	private int id;
@@ -29,7 +27,7 @@ public class Project extends Model {
 	private Double totalHrs;
 	private int memCount;
 	private String dateRegistered;
-	
+
 	public int getId() {
 		return id;
 	}
@@ -112,34 +110,51 @@ public class Project extends Model {
 	public void setDateRegistered(String dateRegistered) {
 		this.dateRegistered = dateRegistered;
 	}
-	
-	public JSONArray getProjectList(String userID) {
-		
+
+	public JSONArray getProjectList(String userID) {		
 		ResultSet rs = null;
 		ArrayList<Project>  projList = new ArrayList<>();
 		try {
-			PreparedStatement ps = super.getDb().getConnect().prepareStatement("SELECT * FROM pworeg_project WHERE manager = ?;");
+			PreparedStatement ps = super.getDb().getConnect().prepareStatement("SELECT "
+					+ "proj.id AS projid, "
+					+ "nspprojectname AS projname, "
+					+ "projectcommonname AS projcommonname, "
+					+ "dateregistered AS dateregistered, "
+					+ "proj.projectstartdate AS startdate, "
+					+ "proj.projectenddate AS enddate, "
+					+ "manager AS managerid, "
+					+ "leader AS leaderid, "
+					+ "u.givenname AS givenname, " 
+					+ "u.surname AS surname, "
+					+ "proj.status AS status "
+					+ "FROM pworeg_project AS proj " 
+					+ "INNER JOIN fos_user u ON proj.manager = u.id " 
+					+ "WHERE proj.manager = ?;");
 			ps.setString(1, userID);
 			rs = ps.executeQuery();	
-			
+
 			while (rs.next()){
 				Project p = new Project();
-				p.setId(rs.getInt("id"));
-				p.setName(rs.getString("nspprojectname"));
-				p.setCommonName(rs.getString("projectcommonname"));
+				p.setId(rs.getInt("projid"));
+				p.setName(rs.getString("projname"));
+				p.setCommonName(rs.getString("projcommonname"));			
 				p.setDateRegistered(rs.getString("dateregistered"));	
-				p.setManager(new User().getUser(rs.getInt("leader")));
-				p.setManager(new User().getUser(rs.getInt("manager")));
+				
+				User manager = new User();				
+				p.setManager(manager.getUser(rs.getInt("managerid")));
+				
+				User leader = new User();				
+				p.setLeader(leader.getUser(rs.getInt("leaderid")));
+
 				p.setStatus(rs.getString("status"));
-				//p.setStartDate(rs.getDate("startdate"));
-				//p.setEndDate(rs.getDate("enddate"));	
-				
-				p.setTotalHrs(getProjectHours(p.getId()));
-				
-				
+				p.setStartDate(rs.getDate("startdate"));
+				p.setEndDate(rs.getDate("enddate"));	
+				p.setMemCount(getMemberCount(p.getId()));
+				p.setTotalHrs(getProjectHours(p.getId()));						
 				projList.add(p);		
 			}					
 			rs.close();
+			super.getDb().close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -147,11 +162,11 @@ public class Project extends Model {
 		return toJSONArray(projList);
 	}
 	
+
 	private Double getProjectHours (int projectid) {
 		Double ret = null;
 		ResultSet res = null;
-		try {
-			
+		try {			
 			PreparedStatement ps = super.getDb().getConnect().prepareStatement("SELECT SUM(regularHours+OTHours) AS totalhrs FROM dts_direct_activity WHERE pworeg_project_id = ?;");		
 			ps.setInt(1, projectid);
 			res = ps.executeQuery();
@@ -162,32 +177,79 @@ public class Project extends Model {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
-		
 		return ret;
-	}
+	}	
+
 	
+	//TO CONTINUE
+	@SuppressWarnings("unused")
+	private Double getMemberList (int projectid) {
+		Double ret = null;
+		ResultSet res = null;
+		try {			
+			PreparedStatement ps = super.getDb().getConnect().prepareStatement("SELECT "
+					+ "DISTINCT p.member_id AS memberid, "
+					+ "p.proj_id AS projid, "
+					+ "u.givenname AS givenname, "
+					+ "u.surname AS surname "
+					+ "FROM pworeg_project_member AS p\r\n" 
+					+ "INNER JOIN fos_user AS u ON p.member_id = u.id\r\n" 
+					+ "WHERE proj_id = ?;");		
+			ps.setInt(1, projectid);
+			res = ps.executeQuery();
+
+			while (res.next()){
+				//ret =  res.getsi;
+			}
+			res.close();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+		return ret;
+	}	
+	
+	
+	private int getMemberCount(int projectid) {
+		int ret = 0;
+		ResultSet res = null;
+		try {			
+			PreparedStatement ps = super.getDb().getConnect().prepareStatement("SELECT COUNT(DISTINCT p.member_id) AS membercount FROM pworeg_project_member AS p\r\n" + 
+					"INNER JOIN fos_user AS u ON p.member_id = u.id\r\n" + 
+					"WHERE proj_id = ?;");		
+			ps.setInt(1, projectid);
+			res = ps.executeQuery();
+			res.next();
+			ret =  res.getInt("membercount");	
+			res.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+		return ret;
+	}	
+
 	@SuppressWarnings("unchecked")
-	private JSONArray toJSONArray(ArrayList<Project> arr) {	
-		
+	public JSONArray toJSONArray(ArrayList<Project> arr) {			
 		JSONArray jarr = new JSONArray();
 		for (Project p: arr) {
 			jarr.add(toJSONObject(p));
 		}
-
 		return jarr;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private JSONObject toJSONObject(Project p) {
+	public JSONObject toJSONObject(Project p) {
 		JSONObject obj = new JSONObject();
-		obj.put("name", p.name);
+		obj.put("projid", p.id);
+		obj.put("projectname", p.name);
 		obj.put("commonname", p.commonName);
 		obj.put("dateregistered", p.dateRegistered);
 		obj.put("totalhrs", p.totalHrs);
 		obj.put("manager", p.getManager().getFullName());
-		obj.put("leader", p.getManager().getFullName());
+		obj.put("leader", p.getLeader().getFullName());
+		obj.put("membercount", p.memCount);
 		obj.put("status", p.getStatus());
 		return obj;	
 	}
-
 }

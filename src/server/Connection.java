@@ -3,6 +3,7 @@ package server;
 import java.io.IOException;
 import java.net.Socket;
 
+import server.auth.Auth;
 import server.http.HttpPacket;
 import server.http.HttpParser;
 import server.http.HttpWriter;
@@ -26,7 +27,7 @@ public class Connection implements Runnable{
 		
 		HttpPacket p = httpParser.parseRequest();
 		System.out.println("Processing " + p.getReqMethod() + p.getReqRoute() + " from " + socket.getRemoteSocketAddress());
-		//Auth.authenticate(p)
+		p = Auth.instance().authenticate(p);
 		httpWriter.write(router.route(p));
 		
 		try {
