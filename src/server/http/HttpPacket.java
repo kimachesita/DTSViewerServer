@@ -85,8 +85,16 @@ public class HttpPacket {
 	
 	public String getToken() {
 		String auth = header.get("Authentication");
-		if(auth != null) return auth.split(" ")[1];
-		else return null;
+		try {
+			
+			if(auth != null) return auth.split(" ")[1];
+			else return null;
+			
+		}catch(ArrayIndexOutOfBoundsException e) {
+			System.out.println("Authentication Parse Error");
+			return null;
+		}
+		
 	}
 	
 	//used by parser and packet creator to parse and record request parameters
@@ -140,6 +148,13 @@ public class HttpPacket {
 		}catch(Exception e) {
 			return 0;
 		}
+	}
+	
+	public String getContentType() {
+		String val = header.get("Content-Type");
+		if(val == null) val = header.get("content-type");
+		if(val == null) val = header.get("Content-type");
+		return val;
 	}
 	
 	public String getBody() {

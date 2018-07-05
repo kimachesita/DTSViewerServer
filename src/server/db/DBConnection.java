@@ -1,75 +1,93 @@
 package server.db;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 
-public class DBConnection {
+import server.Config;
+import server.FileHandler;
 
-	private Connection connect;
-	private Statement statement;
-	HashMap<String, String> dbDetail = new HashMap<>();
+public class DBConnection {
+	
+	private static DBConnection self;
+	private static Connection connect;
+	private static HashMap<String, String> dbDetail;
+	private FileHandler fileHandler;
 
 	public DBConnection(){
-
+		dbDetail = new HashMap<>();
+		fileHandler = new FileHandler();
 	}
 	
-	public void connect() throws SQLException{
+	public static DBConnection getInstance() {
+		if(self == null) return new DBConnection();
+		else return self;
+			
+	}
+	
+	public boolean connect(){
 		try {		
 			//read db config file
-			readFile();
+			//dbDetail = fileHandler.readFile("trunk/src/server/db/config-db.txt");
 			
 			Class.forName("com.mysql.cj.jdbc.Driver");
+//			connect = DriverManager.getConnection("jdbc:mysql://"+ 
+//					dbDetail.get("host") 		+ ":" +
+//					dbDetail.get("port") 		+ "/" +
+//					dbDetail.get("database")	+ "?" +
+//					dbDetail.get("ext"), 
+//					dbDetail.get("username"), 
+//					dbDetail.get("password"));
+			
 			connect = DriverManager.getConnection("jdbc:mysql://"+ 
-					dbDetail.get("host") + ":" +
-					dbDetail.get("port") 		+ "/" +
-					dbDetail.get("database")	+ "?" +
-					dbDetail.get("ext"), 
-					dbDetail.get("username"), 
-					dbDetail.get("password"));
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+					Config.instance().getValue("db_host")		+ ":" +
+					Config.instance().getValue("db_port")		+ "/" +
+					Config.instance().getValue("db_database")	+ "?" +
+					Config.instance().getValue("db_ext"), 
+					Config.instance().getValue("db_username"), 
+					Config.instance().getValue("db_password"));
+			
+			return true;
+		} catch (SQLException | ClassNotFoundException e) {
+			System.out.println("DB : Error on connect attempt. Exiting now.");
+			return false;
+		} 
 	}
 
-	
 	public Connection getConnect() {
 		return connect;
 	}
-
-	private void readFile() {
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader("src/server/db/config-db.txt"));
-			String line;
-			while ((line = reader.readLine()) != null){
-				String[] parts = line.split(":");
-				dbDetail.put(parts[0].replace(";", ""), parts[1].replace(";", ""));
+	
+	public void closeResultSet(ResultSet rs) {
+		if(rs != null) {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				e.printStackTrace();	           
 			}
-			reader.close();	
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-	}
+	}   
 
-	// You need to close the resultSet
-	public void close() {
-		try {
-			if (statement != null) {
-				statement.close();
+	public void closePreparedStatement(PreparedStatement ps) {
+		if(ps != null) {
+			try {
+				ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();	            
 			}
+		}
+	}  
 
-			if (connect != null) {
+	public void closeConnection() {
+		if(connect != null) {
+			try {
 				connect.close();
+			} catch (SQLException e) {
+				e.printStackTrace();	          
 			}
-		} catch (Exception e) {
-
 		}
-	}
+	} 
 }

@@ -1,52 +1,49 @@
 package server.router;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.simple.JSONArray;
 
 import server.data.DataModel;
 import server.data.GenericDataModel;
-import server.db.model.WorkOrder;
+import server.db.model.DirectActivityModel;
 import server.http.HttpPacketStatus;
 
 public class GetWorkorderRouteHandler extends RouteHandler {
 
+	
+	private static final List<String> REQUIRED_PARAM = new ArrayList<>();
+	static {
+
+		REQUIRED_PARAM.add("projectId");
+		REQUIRED_PARAM.add("dateFrom");
+		REQUIRED_PARAM.add("dateTo");
+	}
+	
 	public GetWorkorderRouteHandler() {
-		super(HttpPacketStatus.OK);
+		super(HttpPacketStatus.OK, REQUIRED_PARAM);
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public DataModel process(HashMap<String, String> param) {
-		String projectId = param.get("projectId");
-		String dateFrom = param.get("dateFrom");
-		String dateTo = param.get("dateTo");
-		
-		JSONArray j = new JSONArray();
-		
-		if(projectId == null ) {
-			projectId = "";
-		}
-		
-		if(dateFrom == null ) {
-			dateFrom = "";
-		}
-		
-		if(dateTo == null ) {
-			dateTo = "";
-		}
-		
-		
-		
+
+		JSONArray res = new JSONArray();
+			
 		try {
-			WorkOrder wo = new WorkOrder();
-			j = wo.getWorkOrderList(projectId, dateFrom , dateTo);
+			DirectActivityModel wo = new DirectActivityModel();
+			res = wo.getDirectActivityByProject(param.get(REQUIRED_PARAM.get(0)),
+					param.get(REQUIRED_PARAM.get(1)),
+					param.get(REQUIRED_PARAM.get(2))
+					);
 		} catch (SQLException e) {
 			super.setStatus(HttpPacketStatus.SERVERERROR);
-			j.add("Cannot connect to DB");
+			res.add("Cannot connect to DB");
 		}
-		return new GenericDataModel(j);
+		return new GenericDataModel(res);
 	}
 
 }

@@ -12,18 +12,18 @@ import server.data.GenericDataModel;
 import server.db.model.DirectActivityModel;
 import server.http.HttpPacketStatus;
 
-public class GetDirectActivityByUserRouteHandler extends RouteHandler {
-
+public class GetDirectActivitySummaryByEngineerRouteHandler extends RouteHandler {
+	
 	private static final List<String> REQUIRED_PARAM = new ArrayList<>();
 	static {
+
 		REQUIRED_PARAM.add("projectId");
 		REQUIRED_PARAM.add("userId");
 		REQUIRED_PARAM.add("dateFrom");
 		REQUIRED_PARAM.add("dateTo");
 	}
 
-
-	public GetDirectActivityByUserRouteHandler() {
+	public GetDirectActivitySummaryByEngineerRouteHandler() {
 		super(HttpPacketStatus.OK, REQUIRED_PARAM);
 	}
 
@@ -32,12 +32,12 @@ public class GetDirectActivityByUserRouteHandler extends RouteHandler {
 	public DataModel process(HashMap<String, String> param) {
 
 		JSONArray res = new JSONArray();
-
+		
 		try {
 			
-			DirectActivityModel da = new DirectActivityModel();
+			DirectActivityModel w = new DirectActivityModel();
 			
-			res = da.getDirectActivityByUser(param.get(REQUIRED_PARAM.get(0)),
+			res = w.getDirectActivitySummaryHoursByEngineer(param.get(REQUIRED_PARAM.get(0)),
 					param.get(REQUIRED_PARAM.get(1)),
 					param.get(REQUIRED_PARAM.get(2)),
 					param.get(REQUIRED_PARAM.get(3))

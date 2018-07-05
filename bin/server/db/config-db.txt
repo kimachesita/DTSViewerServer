@@ -1,6 +1,6 @@
 host:172.28.59.112;
 port:3307;
 database:bspgoss;
-username:kim;
-password:1234;
+username:charles;
+password:charles123;
 ext:useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false;

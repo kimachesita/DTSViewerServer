@@ -42,7 +42,9 @@ public class HttpParser {
 
 		HttpPacket p = new HttpPacket(b.toString());
 
-		if( p.getContentLength() != 0 ) {
+		//System.out.println(p.getContentType());
+		//p.getContentType().matches("application/x-www-form-urlencoded"
+		if( p.getContentLength() != 0) {
 			StringBuilder body = new StringBuilder();
 			for(int i = 0; i < p.getContentLength();i++) {
 				try {
@@ -59,7 +61,7 @@ public class HttpParser {
 		return p;
 	}
 
-	//method to parse respose @ client side
+	//method to parse response @ client side
 	public HttpPacket parseResponse() {
 
 		StringBuilder b = new StringBuilder();

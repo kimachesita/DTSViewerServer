@@ -8,14 +8,14 @@ import server.http.HttpPacket;
 import server.http.HttpParser;
 import server.http.HttpWriter;
 
-public class Connection implements Runnable{
+public class HttpRequestConnection implements Runnable{
 	
 	private Socket socket;
 	private HttpParser httpParser;
 	private HttpWriter httpWriter;
 	private Router router;
 
-	public Connection(Socket s) {
+	public HttpRequestConnection(Socket s) {
 		socket = s;
 		httpParser = new HttpParser(s);
 		httpWriter = new HttpWriter(s);
@@ -24,14 +24,14 @@ public class Connection implements Runnable{
 
 	@Override
 	public void run() {
-		
 		HttpPacket p = httpParser.parseRequest();
-		System.out.println("Processing " + p.getReqMethod() + p.getReqRoute() + " from " + socket.getRemoteSocketAddress());
-		p = Auth.instance().authenticate(p);
+		System.out.println("HttpRequest: Processing " + p.getReqMethod() + p.getReqRoute() + " from " + socket.getRemoteSocketAddress());
+		p = Auth.instance().authenticator(p);
 		httpWriter.write(router.route(p));
-		
+			
 		try {
 			socket.close();
+				
 		} catch (IOException e) {
 			System.out.println("Error Closing Socket" + socket.getRemoteSocketAddress());
 		}

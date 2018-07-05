@@ -8,6 +8,9 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 public class HASH {
+	
+	public static final int NONEMPTY = 1;
+	
 	public static String digest(String msg, String keyString, String algo) {
 	    String digest = null;
 	    try {
@@ -20,15 +23,14 @@ public class HASH {
 	      StringBuffer hash = new StringBuffer();
 	      for (int i = 0; i < bytes.length; i++) {
 	        String hex = Integer.toHexString(0xFF & bytes[i]);
-	        if (hex.length() == 1) {
+	        if (hex.length() == NONEMPTY) {
 	          hash.append('0');
 	        }
 	        hash.append(hex);
 	      }
 	      digest = hash.toString();
-	    } catch (UnsupportedEncodingException e) {
-	    } catch (InvalidKeyException e) {
-	    } catch (NoSuchAlgorithmException e) {
+	    } catch (UnsupportedEncodingException | InvalidKeyException | NoSuchAlgorithmException e) {
+	    	System.out.println("Error Hashing Value");
 	    }
 	    return digest;
 	  }

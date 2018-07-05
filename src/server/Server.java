@@ -4,38 +4,50 @@ import java.io.IOException;
 import java.net.*;
 
 import server.auth.Auth;
+import server.db.DBConnection;
 
 public class Server {
 
 	public ServerSocket serverSocket;
 
 	public Server(Integer p){
-		initializeAuth();
-		System.out.println("Creating ServerSocket at port: " + p);
+		
+		boolean DBServiceStarted = false;
+		boolean AuthServiceStarted = false;
+		
 		try {
-			serverSocket = new ServerSocket(p);
+			AuthServiceStarted = initializeAuth();
+			DBServiceStarted = DBConnection.getInstance().connect();
+			if(AuthServiceStarted && DBServiceStarted) { 
+				System.out.println("Server: Startup check passed.");
+				System.out.println("Server: Creating ServerSocket at port: " + p);
+				serverSocket = new ServerSocket(p);
+			}else 
+				System.exit(1);
 		} catch (IOException e) {
-			System.out.println("Error Opening ServerSocket: " + e.getMessage());
+			System.out.println("Server: Error Opening ServerSocket: " + e.getMessage());
+			System.exit(1);
 		}
 	}
 	
-	public void initializeAuth() {
-		System.out.println("Creating Auth Service");
+	public boolean initializeAuth() {
+		System.out.println("Server: Creating Auth Service");
 		Auth.instance().addExceptions("POST/api/login");
 		Auth.instance().addExceptions("GET/");
 		Auth.instance().start();
+		return true;
 	}
 
 	public void listen(){
-		System.out.println("Server Listening at " + serverSocket.getLocalSocketAddress());
+		System.out.println("Server: Server Listening at " + serverSocket.getLocalSocketAddress());
 		while(true) {
 			try {
 
-				Connection c = new Connection(serverSocket.accept());
+				HttpRequestConnection c = new HttpRequestConnection(serverSocket.accept());
 				Thread t = new Thread(c);
 				t.start();
 			} catch (IOException e) {
-				System.out.println("Error Accepting Connections: " + e.getMessage());
+				System.out.println("Server: Error Accepting Connections: " + e.getMessage());
 				break;
 			}
 
@@ -47,12 +59,13 @@ public class Server {
 		try {
 			serverSocket.close();
 		} catch (IOException e) {
-			System.out.println("Error closing server socket: " + e.getMessage());
+			System.out.println("Server: Error closing server socket: " + e.getMessage());
 		}
 	}
 
 	public static void main(String[] args) {
-		Server httpd = new Server(3000);
+		Integer port = Integer.valueOf(Config.instance().getValue("port"));
+		Server httpd = new Server(port);
 		httpd.listen();
 	}
 }

@@ -14,6 +14,4 @@ public class GenericDataModel extends DataModel {
 	public JSONArray getJSONArray() {
 		return data;
 	}
-
-
 }
